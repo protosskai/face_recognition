@@ -35,18 +35,21 @@ class EntryWindow(Ui_mainWindow):
                        self.curUserImg.size().height())
         if len(self.face_names) > 0 and self.face_names[0] != "Unknown":
             name = self.face_names[0]
-            image_file_path = self.image_templates_dir + name + ".jpg"
+            numbers = self.face_numbers[0]
+            image_file_path = self.image_templates_dir + name + "_" + numbers +".jpg"
             image = load_image_file(image_file_path, imgViewSize)
             pixmap = QImage(
                 image, imgViewSize[0], imgViewSize[1], QImage.Format_RGB888)
             pixmap = QPixmap.fromImage(pixmap)
             self.curUserImg.setPixmap(pixmap)
-            # self.userListView.
-
+        # 更新名称和学号标签
+        pass
     def initFaceDetect(self):
         # 加载人脸的模板图片
-        self.known_face_encodings, self.known_face_names = load_image_templates(
+        self.known_face_encodings, self.known_face_tags = load_image_templates(
             self.image_templates_dir)
+        self.known_face_names = [tag.split("_")[0] for tag in self.known_face_tags]
+        self.known_face_numbers = [tag.split("_")[1] for tag in self.known_face_tags]
         self.face_locations = []
         self.face_names = []
         self.timeCost = 0.0
@@ -79,8 +82,8 @@ class EntryWindow(Ui_mainWindow):
         if self.process_this_frame:
             # 记录人脸识别算法的开始时间
             begin_time = time.time()
-            self.face_locations, self.face_names = detect_frame(
-                cur_frame, self.known_face_encodings, self.known_face_names)
+            self.face_locations, self.face_names, self.face_numbers = detect_frame(
+                cur_frame, self.known_face_encodings, self.known_face_names, self.known_face_numbers)
             # 记录人脸识别算法的结束时间
             end_time = time.time()
             # 计算算法耗时，并转为毫秒

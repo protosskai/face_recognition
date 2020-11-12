@@ -17,7 +17,7 @@ def load_image_templates(image_templates_dir):
             face_image = face_recognition.load_image_file(path)
             face_encoding = face_recognition.face_encodings(
                 face_image)[0]  # 获取每个人脸图片的encoding
-            face_tag = os.path.splitext(image)[0]  # 获取每个图片对应的用户的名字
+            face_tag = os.path.splitext(image)[0]  # 获取每个图片对应的用户的名字和学号
             face_encodings.append(face_encoding)
             face_tags.append(face_tag)
         return face_encodings, face_tags
@@ -26,13 +26,14 @@ def load_image_templates(image_templates_dir):
         exit(-1)
 
 
-def detect_frame(frame, known_face_encodings, known_face_names, model="hog"):
+def detect_frame(frame, known_face_encodings, known_face_names, known_face_numbers, model="hog"):
     """
     从一张图片中检测人脸，返回人脸的边框信息和人脸的名字
     """
     face_locations = face_recognition.face_locations(frame, model=model)
     face_encodings = face_recognition.face_encodings(frame, face_locations)
     face_names = []
+    face_numbers = []
     for face_encoding in face_encodings:
         # See if the face is a match for the known face(s)
         matches = face_recognition.compare_faces(
@@ -49,6 +50,7 @@ def detect_frame(frame, known_face_encodings, known_face_names, model="hog"):
         best_match_index = np.argmin(face_distances)
         if matches[best_match_index]:
             name = known_face_names[best_match_index]
-
+            number = known_face_numbers[best_match_index]
         face_names.append(name)
-    return face_locations, face_names
+        face_numbers.append(number)
+    return face_locations, face_names, face_numbers
