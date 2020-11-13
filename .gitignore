@@ -2,4 +2,6 @@
 /img_templates
 /base/__pycache__
 *.db
+/.idea
+/.vscode
 

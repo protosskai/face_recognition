@@ -1,3 +1,11 @@
+'''
+Description: 
+version: 
+Auther: protosskai
+Date: 2020-11-13 12:10:33
+LastEditTime: 2020-11-13 12:10:33
+'''
+
 from PyQt5 import QtCore, QtGui
 from PyQt5.Qt import *
 from PyQt5.QtCore import *

@@ -245,34 +245,34 @@
     <property name="title">
      <string>文件</string>
     </property>
-    <addaction name="action"/>
-    <addaction name="action_3"/>
-    <addaction name="action_4"/>
-    <addaction name="action_5"/>
-    <addaction name="action_9"/>
+    <addaction name="openDatabaseMenu"/>
+    <addaction name="closeDatabaseMenu"/>
+    <addaction name="saveDatabaseMenu"/>
+    <addaction name="exportDatabaseMenu"/>
+    <addaction name="exitMenu"/>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">
      <string>人脸管理</string>
     </property>
-    <addaction name="action_6"/>
-    <addaction name="action_7"/>
-    <addaction name="action_8"/>
+    <addaction name="showFaceTemplateMenu"/>
+    <addaction name="insertFaceTemplateMenu"/>
+    <addaction name="editFaceTemplateMenu"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
      <string>帮助</string>
     </property>
-    <addaction name="action_10"/>
-    <addaction name="action_11"/>
+    <addaction name="documentMenu"/>
+    <addaction name="aboutMenu"/>
    </widget>
    <widget class="QMenu" name="menu_3">
     <property name="title">
      <string>组织管理</string>
     </property>
-    <addaction name="action_13"/>
-    <addaction name="action_12"/>
-    <addaction name="action_14"/>
+    <addaction name="showOrganizationMenu"/>
+    <addaction name="newOrganizationMenu"/>
+    <addaction name="editOrganizationMenu"/>
    </widget>
    <addaction name="fileMenu"/>
    <addaction name="menu"/>
@@ -280,67 +280,67 @@
    <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action">
+  <action name="openDatabaseMenu">
    <property name="text">
     <string>打开数据库文件</string>
    </property>
   </action>
-  <action name="action_3">
+  <action name="closeDatabaseMenu">
    <property name="text">
     <string>关闭数据库文件</string>
    </property>
   </action>
-  <action name="action_4">
+  <action name="saveDatabaseMenu">
    <property name="text">
     <string>保存数据库文件</string>
    </property>
   </action>
-  <action name="action_5">
+  <action name="exportDatabaseMenu">
    <property name="text">
     <string>导出数据库文件</string>
    </property>
   </action>
-  <action name="action_6">
+  <action name="showFaceTemplateMenu">
    <property name="text">
     <string>人脸模板查看</string>
    </property>
   </action>
-  <action name="action_7">
+  <action name="insertFaceTemplateMenu">
    <property name="text">
     <string>人脸模板录入</string>
    </property>
   </action>
-  <action name="action_8">
+  <action name="editFaceTemplateMenu">
    <property name="text">
     <string>人脸模板编辑</string>
    </property>
   </action>
-  <action name="action_9">
+  <action name="exitMenu">
    <property name="text">
     <string>退出</string>
    </property>
   </action>
-  <action name="action_10">
+  <action name="documentMenu">
    <property name="text">
     <string>使用文档</string>
    </property>
   </action>
-  <action name="action_11">
+  <action name="aboutMenu">
    <property name="text">
     <string>关于本系统</string>
    </property>
   </action>
-  <action name="action_12">
+  <action name="newOrganizationMenu">
    <property name="text">
     <string>新建组织</string>
    </property>
   </action>
-  <action name="action_13">
+  <action name="showOrganizationMenu">
    <property name="text">
     <string>组织一览</string>
    </property>
   </action>
-  <action name="action_14">
+  <action name="editOrganizationMenu">
    <property name="text">
     <string>编辑组织</string>
    </property>

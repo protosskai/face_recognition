@@ -1,13 +1,24 @@
+'''
+Description: 
+version: 
+Auther: protosskai
+Date: 2020-11-13 12:10:33
+LastEditTime: 2020-11-13 12:49:03
+'''
+
 import sqlite3
 
 
 def insert_student(cursor, name, number, sex, class_name="无", age=0):
-    sql = "INSERT INTO Student (name, age, class, number, sex) VALUES (\"{name}\", {age}, \"{class_name}\", \"{number}\", \"{sex}\");".format(name=name, 
-            age=age, class_name=class_name, number=number, sex=sex)
+    sql = "INSERT INTO Student (name, age, class, number, sex) VALUES (\"{name}\", {age}, \"{class_name}\", \"{number}\", \"{sex}\");".format(
+        name=name,
+        age=age, class_name=class_name, number=number, sex=sex)
     cursor.execute(sql)
 
+
 def query_student_by_number(cursor, number):
-    sql = "select * from Student where number=\"{number}\";".format(number=number)
+    sql = "select * from Student where number=\"{number}\";".format(
+        number=number)
     cur = cursor.execute(sql)
     result = []
     # 构建结果列表
@@ -37,23 +48,32 @@ def update_student_by_number(cursor, number, name=None, age=None, class_name=Non
             one[3] = class_name
         if sex is not None:
             one[4] = sex
-        sql = sql.format(number=number, name=one[1], age=one[2], class_name=one[3], sex=one[4])
+        sql = sql.format(
+            number=number, name=one[1], age=one[2], class_name=one[3], sex=one[4])
         cursor.execute(sql)
 
 
-# 连接数据库(如果不存在则创建)
-conn = sqlite3.connect('test.db')
-print("Opened database successfully")
- 
-# 创建游标
-cursor = conn.cursor()
+def openDatabase(filename):
+    """
+    打开指定路径的数据库文件，并返回连接对象
+    """
+    conn = sqlite3.connect(filename)
+    print("Opened database successfully")
+    return conn
 
-#  insert_student(cursor, "zhangjiajia", "2017081022", "男", "电子八班", 21)
-#  result = query_student_by_number(cursor, "2017081023")
-update_student_by_number(cursor, "2017081023", "zhangjiajia", 15)
-# 关闭游标
-cursor.close()
-# 提交事物
-conn.commit()
-# 关闭连接
-conn.close()
+# 连接数据库(如果不存在则创建)
+# conn = sqlite3.connect('test.db')
+# print("Opened database successfully")
+#
+# # 创建游标
+# cursor = conn.cursor()
+#
+# #  insert_student(cursor, "zhangjiajia", "2017081022", "男", "电子八班", 21)
+# #  result = query_student_by_number(cursor, "2017081023")
+# update_student_by_number(cursor, "2017081023", "zhangjiajia", 15)
+# # 关闭游标
+# cursor.close()
+# # 提交事物
+# conn.commit()
+# # 关闭连接
+# conn.close()

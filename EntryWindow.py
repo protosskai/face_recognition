@@ -1,19 +1,30 @@
+'''
+Description: 
+version: 
+Auther: protosskai
+Date: 2020-11-13 12:10:33
+LastEditTime: 2020-11-13 12:59:28
+'''
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.Qt import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from CameraWidget import CameraWidget
+from PyQt5.QtWidgets import *
 from base.baseMainWindow import Ui_mainWindow
 import cv2
 from face_api import *
 import time
 from tools import *
+from db import *
 
 
 class EntryWindow(Ui_mainWindow):
 
     def __init__(self, MainWindow):
         super().__init__()
+        self.mainWindow = MainWindow
         self.image_templates_dir = "./img_templates/"
         self.setupUi(MainWindow)
         # 初始化界面各个控件
@@ -25,7 +36,11 @@ class EntryWindow(Ui_mainWindow):
         self.timer.timeout.connect(self.updateUI)
         self.timer.setInterval(15)
         self.timer.start()
+        # 本项目使用的数据库连接
+        self.databaseConnection = None
+        self.database_filename = ""
 
+    # 定时器回调函数，用于更新UI
     def updateUI(self):
         # 更新每次人脸检测耗时的标签
         timeCostStr = "耗时为:" + str(int(self.timeCost)) + "ms"
@@ -36,20 +51,34 @@ class EntryWindow(Ui_mainWindow):
         if len(self.face_names) > 0 and self.face_names[0] != "Unknown":
             name = self.face_names[0]
             numbers = self.face_numbers[0]
-            image_file_path = self.image_templates_dir + name + "_" + numbers +".jpg"
+            image_file_path = self.image_templates_dir + name + "_" + numbers + ".jpg"
             image = load_image_file(image_file_path, imgViewSize)
             pixmap = QImage(
                 image, imgViewSize[0], imgViewSize[1], QImage.Format_RGB888)
             pixmap = QPixmap.fromImage(pixmap)
             self.curUserImg.setPixmap(pixmap)
         # 更新名称和学号标签
-        pass
+        if len(self.face_names) != 0 and len(self.face_numbers) != 0:
+            self.curUserName.setText("姓名：" + self.face_names[0])
+            self.curUserNumber.setText("编号：" + self.face_numbers[0])
+        else:
+            self.curUserName.setText("姓名：无")
+            self.curUserNumber.setText("编号：无")
+        # 更新状态栏显示的内容
+        if self.databaseConnection is None:
+            self.statusbar.showMessage("数据库未连接")
+        else:
+            self.statusbar.showMessage("数据库已连接：" + self.database_filename)
+
+    # 初始化人脸识别模块
     def initFaceDetect(self):
         # 加载人脸的模板图片
         self.known_face_encodings, self.known_face_tags = load_image_templates(
             self.image_templates_dir)
-        self.known_face_names = [tag.split("_")[0] for tag in self.known_face_tags]
-        self.known_face_numbers = [tag.split("_")[1] for tag in self.known_face_tags]
+        self.known_face_names = [tag.split("_")[0]
+                                 for tag in self.known_face_tags]
+        self.known_face_numbers = [
+            tag.split("_")[1] for tag in self.known_face_tags]
         self.face_locations = []
         self.face_names = []
         self.timeCost = 0.0
@@ -57,8 +86,11 @@ class EntryWindow(Ui_mainWindow):
         self.process_this_frame = True
 
     def initUI(self):
+        # 绑定按钮事件
         self.openCameraBtn.clicked.connect(self.openCamera)
         self.recordBtn.clicked.connect(self.manuallyRecord)
+        # 绑定菜单事件
+        self.openDatabaseMenu.triggered.connect(self.openDataBase)
 
     def openCamera(self):
         # 将摄像头部件附加到主界面上
@@ -69,6 +101,7 @@ class EntryWindow(Ui_mainWindow):
         self.cameraWidget.setBeforeDisplayFrame(self.beforeDisplayFrame)
         self.openCameraBtn.hide()
 
+    # 手动录入签到信息
     def manuallyRecord(self):
         print("manuallyRecord")
 
@@ -83,12 +116,12 @@ class EntryWindow(Ui_mainWindow):
             # 记录人脸识别算法的开始时间
             begin_time = time.time()
             self.face_locations, self.face_names, self.face_numbers = detect_frame(
-                cur_frame, self.known_face_encodings, self.known_face_names, self.known_face_numbers)
+                cur_frame, self.known_face_encodings, self.known_face_names, self.known_face_numbers, tolerance=0.35)
             # 记录人脸识别算法的结束时间
             end_time = time.time()
             # 计算算法耗时，并转为毫秒
             if len(self.face_locations) != 0:
-                self.timeCost = (end_time-begin_time) * 1000
+                self.timeCost = (end_time - begin_time) * 1000
                 print('人脸识别算法运行时间：%.1fms' % self.timeCost)
         self.process_this_frame = not self.process_this_frame
         # 不对图像做任何处理，直接返回
@@ -109,18 +142,28 @@ class EntryWindow(Ui_mainWindow):
             # Draw a box around the face
             cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
 
-            # Draw a label with a name below the face
-            cv2.rectangle(frame, (left, bottom - 35),
-                          (right, bottom), (0, 0, 255), cv2.FILLED)
-            font = cv2.FONT_HERSHEY_DUPLEX
-            cv2.putText(frame, name, (left + 6, bottom - 6),
-                        font, 1.0, (255, 255, 255), 1)
+            # # Draw a label with a name below the face
+            # cv2.rectangle(frame, (left, bottom - 35),
+            #               (right, bottom), (0, 0, 255), cv2.FILLED)
+            # font = cv2.FONT_HERSHEY_DUPLEX
+            # cv2.putText(frame, name, (left + 6, bottom - 6),
+            #             font, 1.0, (255, 255, 255), 1)
 
         return frame
+
+    # 打开指定的数据库文件
+    def openDataBase(self):
+        fname = QFileDialog.getOpenFileName(self.mainWindow, '打开数据库', './')
+        # 创建数据库连接
+        self.databaseConnection = openDatabase(fname[0])
+        # 更新状态栏
+        filename = fname[0].split("/")[-1]
+        self.database_filename = filename
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = EntryWindow(MainWindow)

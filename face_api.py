@@ -1,3 +1,11 @@
+'''
+Description: 
+version: 
+Auther: protosskai
+Date: 2020-11-13 12:10:33
+LastEditTime: 2020-11-13 12:11:01
+'''
+
 import face_recognition
 import numpy as np
 import os
@@ -26,7 +34,7 @@ def load_image_templates(image_templates_dir):
         exit(-1)
 
 
-def detect_frame(frame, known_face_encodings, known_face_names, known_face_numbers, model="hog"):
+def detect_frame(frame, known_face_encodings, known_face_names, known_face_numbers, tolerance=0.6, model="hog"):
     """
     从一张图片中检测人脸，返回人脸的边框信息和人脸的名字
     """
@@ -47,6 +55,11 @@ def detect_frame(frame, known_face_encodings, known_face_names, known_face_numbe
         # Or instead, use the known face with the smallest distance to the new face
         face_distances = face_recognition.face_distance(
             known_face_encodings, face_encoding)
+        result = list(face_distances <= tolerance)
+        if True not in result:
+            face_names.append(name)
+            face_numbers.append("无")
+            continue
         best_match_index = np.argmin(face_distances)
         if matches[best_match_index]:
             name = known_face_names[best_match_index]
