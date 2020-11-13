@@ -9,14 +9,17 @@ LastEditTime: 2020-11-13 12:49:03
 import sqlite3
 
 
-def insert_student(cursor, name, number, sex, class_name="无", age=0):
+def insert_student(conn, name, number, sex, age, class_name="无"):
+    cursor = conn.cursor()
     sql = "INSERT INTO Student (name, age, class, number, sex) VALUES (\"{name}\", {age}, \"{class_name}\", \"{number}\", \"{sex}\");".format(
         name=name,
         age=age, class_name=class_name, number=number, sex=sex)
     cursor.execute(sql)
+    conn.commit()
 
 
-def query_student_by_number(cursor, number):
+def query_student_by_number(conn, number):
+    cursor = conn.cursor()
     sql = "select * from Student where number=\"{number}\";".format(
         number=number)
     cur = cursor.execute(sql)
@@ -27,9 +30,10 @@ def query_student_by_number(cursor, number):
     return result
 
 
-def update_student_by_number(cursor, number, name=None, age=None, class_name=None, sex=None):
+def update_student_by_number(conn, number, name=None, age=None, class_name=None, sex=None):
+    cursor = conn.cursor()
     # 查询原有的记录
-    pre_record = query_student_by_number(cursor, number)
+    pre_record = query_student_by_number(conn, number)
     # 构造更新数据的sql
     sql = "update Student set name=\"{name}\", age={age}, class=\"{class_name}\", sex=\"{sex}\" where number=\"{number}\";"
     if len(pre_record) <= 0:
@@ -51,6 +55,7 @@ def update_student_by_number(cursor, number, name=None, age=None, class_name=Non
         sql = sql.format(
             number=number, name=one[1], age=one[2], class_name=one[3], sex=one[4])
         cursor.execute(sql)
+    conn.commit()
 
 
 def openDatabase(filename):

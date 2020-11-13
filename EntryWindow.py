@@ -157,6 +157,8 @@ class EntryWindow(Ui_mainWindow):
         打开指定的数据库文件
         """
         fname = QFileDialog.getOpenFileName(self.mainWindow, '打开数据库', './')
+        if fname[0] == "":
+            return
         # 创建数据库连接
         self.databaseConnection = openDatabase(fname[0])
         # 更新状态栏
