@@ -1,10 +1,9 @@
-'''
-Description: 
-version: 
-Auther: protosskai
-Date: 2020-11-13 12:10:33
-LastEditTime: 2020-11-13 12:10:33
-'''
+# -*- coding: utf-8 -*-
+# @Time    : 2020/11/13 15:19
+# @Author  : protosskai
+# @Site    :
+# @File    : CameraWidget.py
+# @Software: PyCharm
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.Qt import *

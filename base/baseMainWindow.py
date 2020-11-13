@@ -167,3 +167,13 @@ class Ui_mainWindow(object):
         self.newOrganizationMenu.setText(_translate("mainWindow", "新建组织"))
         self.showOrganizationMenu.setText(_translate("mainWindow", "组织一览"))
         self.editOrganizationMenu.setText(_translate("mainWindow", "编辑组织"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    mainWindow = QtWidgets.QMainWindow()
+    ui = Ui_mainWindow()
+    ui.setupUi(mainWindow)
+    mainWindow.show()
+    sys.exit(app.exec_())

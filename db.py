@@ -61,6 +61,15 @@ def openDatabase(filename):
     print("Opened database successfully")
     return conn
 
+
+def closeDataBase(connection):
+    """
+    关闭数据库连接
+    """
+    if connection is not None:
+        connection.commit()
+        connection.close()
+
 # 连接数据库(如果不存在则创建)
 # conn = sqlite3.connect('test.db')
 # print("Opened database successfully")

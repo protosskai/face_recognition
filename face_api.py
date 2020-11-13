@@ -1,10 +1,9 @@
-'''
-Description: 
-version: 
-Auther: protosskai
-Date: 2020-11-13 12:10:33
-LastEditTime: 2020-11-13 12:11:01
-'''
+# -*- coding: utf-8 -*-
+# @Time    : 2020/11/13 15:19
+# @Author  : protosskai
+# @Site    :
+# @File    : face_api.py
+# @Software: PyCharm
 
 import face_recognition
 import numpy as np
@@ -36,7 +35,7 @@ def load_image_templates(image_templates_dir):
 
 def detect_frame(frame, known_face_encodings, known_face_names, known_face_numbers, tolerance=0.6, model="hog"):
     """
-    从一张图片中检测人脸，返回人脸的边框信息和人脸的名字
+    从一张图片中检测人脸，返回人脸的边框信息和人脸的名字和编号
     """
     face_locations = face_recognition.face_locations(frame, model=model)
     face_encodings = face_recognition.face_encodings(frame, face_locations)

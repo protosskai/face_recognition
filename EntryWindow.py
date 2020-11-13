@@ -1,10 +1,9 @@
-'''
-Description: 
-version: 
-Auther: protosskai
-Date: 2020-11-13 12:10:33
-LastEditTime: 2020-11-13 12:59:28
-'''
+# -*- coding: utf-8 -*-
+# @Time    : 2020/11/13 15:19
+# @Author  : protosskai
+# @Site    :
+# @File    : EntryWindow.py
+# @Software: PyCharm
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.Qt import *
@@ -36,12 +35,14 @@ class EntryWindow(Ui_mainWindow):
         self.timer.timeout.connect(self.updateUI)
         self.timer.setInterval(15)
         self.timer.start()
-        # 本项目使用的数据库连接
+        # 初始化本项目使用的数据库连接
         self.databaseConnection = None
         self.database_filename = ""
 
-    # 定时器回调函数，用于更新UI
     def updateUI(self):
+        """
+        定时器回调函数，用于更新UI
+        """
         # 更新每次人脸检测耗时的标签
         timeCostStr = "耗时为:" + str(int(self.timeCost)) + "ms"
         self.curTimeCost.setText(timeCostStr)
@@ -70,8 +71,10 @@ class EntryWindow(Ui_mainWindow):
         else:
             self.statusbar.showMessage("数据库已连接：" + self.database_filename)
 
-    # 初始化人脸识别模块
     def initFaceDetect(self):
+        """
+        初始化人脸识别模块
+        """
         # 加载人脸的模板图片
         self.known_face_encodings, self.known_face_tags = load_image_templates(
             self.image_templates_dir)
@@ -86,11 +89,16 @@ class EntryWindow(Ui_mainWindow):
         self.process_this_frame = True
 
     def initUI(self):
+        """
+        初始化界面的各个控件
+        """
         # 绑定按钮事件
         self.openCameraBtn.clicked.connect(self.openCamera)
         self.recordBtn.clicked.connect(self.manuallyRecord)
         # 绑定菜单事件
         self.openDatabaseMenu.triggered.connect(self.openDataBase)
+        self.closeDatabaseMenu.triggered.connect(self.closeDatabase)
+        self.saveDatabaseMenu.triggered.connect(self.saveDatabase)
 
     def openCamera(self):
         # 将摄像头部件附加到主界面上
@@ -101,8 +109,10 @@ class EntryWindow(Ui_mainWindow):
         self.cameraWidget.setBeforeDisplayFrame(self.beforeDisplayFrame)
         self.openCameraBtn.hide()
 
-    # 手动录入签到信息
     def manuallyRecord(self):
+        """
+        手动录入签到信息
+        """
         print("manuallyRecord")
 
     def onGetFrameFunc(self, frame):
@@ -131,34 +141,40 @@ class EntryWindow(Ui_mainWindow):
         """
         在显示摄像头的图像前调用此函数对一帧图像进行处理， 返回值为修改过的一帧图像
         """
-        # Display the results
+        # 绘制人脸的方框
         for (top, right, bottom, left), name in zip(self.face_locations, self.face_names):
-            # Scale back up face locations since the frame we detected in was scaled to 1/4 size
+            # 之前保存的坐标被缩小了四分之一，现在还原回去
             top *= 4
             right *= 4
             bottom *= 4
             left *= 4
-
-            # Draw a box around the face
             cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-
-            # # Draw a label with a name below the face
-            # cv2.rectangle(frame, (left, bottom - 35),
-            #               (right, bottom), (0, 0, 255), cv2.FILLED)
-            # font = cv2.FONT_HERSHEY_DUPLEX
-            # cv2.putText(frame, name, (left + 6, bottom - 6),
-            #             font, 1.0, (255, 255, 255), 1)
 
         return frame
 
-    # 打开指定的数据库文件
     def openDataBase(self):
+        """
+        打开指定的数据库文件
+        """
         fname = QFileDialog.getOpenFileName(self.mainWindow, '打开数据库', './')
         # 创建数据库连接
         self.databaseConnection = openDatabase(fname[0])
         # 更新状态栏
         filename = fname[0].split("/")[-1]
         self.database_filename = filename
+
+    def closeDatabase(self):
+        """
+        关闭数据库连接
+        """
+        closeDataBase(self.databaseConnection)
+        self.databaseConnection = None
+
+    def saveDatabase(self):
+        """
+        保存数据库文件
+        """
+        pass
 
 
 if __name__ == "__main__":

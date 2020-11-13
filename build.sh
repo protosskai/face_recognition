@@ -16,7 +16,7 @@ build(){
     # 文件名去掉ui后缀,并且增加base前缀和.py后缀
     filename_new=base${filename%%.ui}.py
     # 生成py文件
-    pyuic5 -o ./base/$filename_new $UI_PATH/$filename
+    pyuic5 -o ./base/$filename_new $UI_PATH/$filename -x
   done
 
 }
