@@ -72,14 +72,16 @@ class EntryWindow(Ui_mainWindow):
         else:
             self.curUserName.setText("姓名：无")
             self.curUserNumber.setText("编号：无")
-        if not self.start_detect:
+        if self.start_detect:
             # 将识别出的人加入已签到的列表，并更新UI的listview
             for i in range(len(self.face_names)):
                 name = self.face_names[i]
                 number = self.face_numbers[i]
                 # 如果当前识别出的人脸不在已签到列表里面
-                if name not in self.user_list:
-                    if check_number_in_org(self.databaseConnection, number, self.cur_org_id):
+                name_list = [i.split("\t")[0] for i in self.user_list]
+                if name not in name_list:
+                    stu_id = query_student_by_number(self.databaseConnection, number)[0][0]
+                    if check_number_in_org(self.databaseConnection, stu_id, self.cur_org_id):
                         self.addUser(name, number)
         # 更新状态栏显示的内容
         if self.databaseConnection is None:
@@ -180,7 +182,7 @@ class EntryWindow(Ui_mainWindow):
             # 记录人脸识别算法的开始时间
             begin_time = time.time()
             self.face_locations, self.face_names, self.face_numbers = detect_frame(
-                cur_frame, self.known_face_encodings, self.known_face_names, self.known_face_numbers, tolerance=0.35)
+                cur_frame, self.known_face_encodings, self.known_face_names, self.known_face_numbers, tolerance=0.4)
             # 记录人脸识别算法的结束时间
             end_time = time.time()
             # 计算算法耗时，并转为毫秒
