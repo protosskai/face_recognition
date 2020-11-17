@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2020/11/13 15:19
 # @Author  : protosskai
-# @Site    :
+# @Site    : protosskai.github.io
 # @File    : CameraWidget.py
 # @Software: PyCharm
 
-from PyQt5 import QtCore, QtGui
+from PyQt5 import QtCore
 from PyQt5.Qt import *
-from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 import cv2
 
@@ -42,7 +41,7 @@ class CameraWidget(QWidget):
     def setBeforeDisplayFrame(self, func):
         self.beforeDisplayFrame = func
 
-    def changeTimerInterval(number):
+    def changeTimerInterval(self, number):
         self._timer.stop()
         self._timer.setInterval(number)
         self._timer.start()

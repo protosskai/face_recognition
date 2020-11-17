@@ -6,11 +6,9 @@
 # @Software: PyCharm
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets
 from PyQt5.Qt import *
-from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from tools import *
 from db import *
 from base.baseAddOrgnization import Ui_AddOrgnizationWidget
 from sqlite3 import IntegrityError
@@ -19,7 +17,7 @@ from sqlite3 import IntegrityError
 class AddOrganizationWidget(Ui_AddOrgnizationWidget, QWidget):
 
     def __init__(self, conn, parent=None):
-        super().__init__(parent)
+        super().__init__()
         self.setupUi(self)
         # 初始化UI界面及各个控件
         self.initUI()
@@ -67,5 +65,5 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     conn = openDatabase("./test.db")
-    addFaceWidget = AddOrganizationWidget(conn)
+    addOrganizationWidget = AddOrganizationWidget(conn)
     sys.exit(app.exec_())

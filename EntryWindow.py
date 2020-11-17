@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2020/11/13 15:19
 # @Author  : protosskai
-# @Site    :
+# @Site    : protosskai.github.io
 # @File    : EntryWindow.py
 # @Software: PyCharm
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.Qt import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from CameraWidget import CameraWidget
 from PyQt5.QtWidgets import *
 from base.baseMainWindow import Ui_mainWindow
-import cv2
 from face_api import *
 import time
 from tools import *
 from db import *
 from AddFaceWidget import AddFaceWidget
+from AddOrganizationWidget import AddOrganizationWidget
+from ChooseOrgWidget import ChooseOrgWidget
 
 
 class EntryWindow(Ui_mainWindow):
@@ -39,6 +40,8 @@ class EntryWindow(Ui_mainWindow):
         # 初始化本项目使用的数据库连接
         self.databaseConnection = None
         self.database_filename = ""
+        # 初始化本次选择的组织
+        self.organization = ""
 
     def updateUI(self):
         """
@@ -101,8 +104,35 @@ class EntryWindow(Ui_mainWindow):
         self.closeDatabaseMenu.triggered.connect(self.closeDatabase)
         self.saveDatabaseMenu.triggered.connect(self.saveDatabase)
         self.insertFaceTemplateMenu.triggered.connect(self.createFace)
+        self.newOrganizationMenu.triggered.connect(self.createOrganization)
+        self.initListView()
+
+    def initListView(self):
+        """
+        初始化已签到用户的QListView
+        """
+        self.model = QStringListModel()
+        self.user_list = []
+        self.model.setStringList(self.user_list)
+        self.userListView.setModel(self.model)
+
+    def addUser(self, name, number):
+        """
+        在已签到的用户的列表里面增加一个人员
+        """
+        if name not in self.user_list:
+            self.user_list.append(name + "\t" + number)
+            self.model.setStringList(self.user_list)
 
     def openCamera(self):
+        if self.databaseConnection is None:
+            QMessageBox(QMessageBox.Warning, '警告', '请先连接到数据库').exec_()
+            return
+        chooseOrgWidget = ChooseOrgWidget(self.databaseConnection, self)
+        chooseOrgWidget.exec_()
+        if self.organization == "":
+            QMessageBox(QMessageBox.Warning, '警告', '未选择组织，请重新选择').exec_()
+            return
         # 将摄像头部件附加到主界面上
         self.cameraWidget = CameraWidget(self.cameraView)
         # 设置摄像头获取到图像后的回调函数
@@ -115,7 +145,15 @@ class EntryWindow(Ui_mainWindow):
         """
         手动录入签到信息
         """
-        print("manuallyRecord")
+        name = self.nameEdit.text()
+        number = self.numberEdit.text()
+        if name.strip() == "":
+            QMessageBox(QMessageBox.Warning, '警告', '姓名或编号不能为空').exec_()
+            return
+        if number.strip() == "":
+            QMessageBox(QMessageBox.Warning, '警告', '姓名或编号不能为空').exec_()
+            return
+        self.addUser(name, number)
 
     def onGetFrameFunc(self, frame):
         """
@@ -188,6 +226,15 @@ class EntryWindow(Ui_mainWindow):
             QMessageBox(QMessageBox.Warning, '警告', '请先连接到数据库').exec_()
             return
         self.addFaceWidget = AddFaceWidget(self.databaseConnection)
+
+    def createOrganization(self):
+        """
+        新增组织信息
+        """
+        if self.databaseConnection is None:
+            QMessageBox(QMessageBox.Warning, '警告', '请先连接到数据库').exec_()
+            return
+        self.addFaceWidget = AddOrganizationWidget(self.databaseConnection)
 
 
 if __name__ == "__main__":

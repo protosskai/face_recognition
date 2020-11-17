@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2020/11/13 15:19
 # @Author  : protosskai
-# @Site    :
+# @Site    : protosskai.github.io
 # @File    : AddFaceWidget.py
 # @Software: PyCharm
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets
 from PyQt5.Qt import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -18,7 +18,7 @@ from sqlite3 import IntegrityError
 class AddFaceWidget(Ui_AddFaceWidget, QWidget):
 
     def __init__(self, conn, parent=None):
-        super().__init__(parent)
+        super().__init__()
         self.setupUi(self)
         # 初始化UI界面及各个控件
         self.initUI()
