@@ -45,7 +45,7 @@ class AddOrganizationWidget(Ui_AddOrgnizationWidget, QWidget):
             QMessageBox(QMessageBox.Warning, '警告', '姓名或编号不能为空').exec_()
             return
         try:
-            insert_organazation(self.conn, name, owner)
+            insert_organization(self.conn, name, owner)
             QMessageBox.about(self, "成功", "添加成功")
         except IntegrityError:
             QMessageBox(QMessageBox.Warning, '警告', '已存在相同名称的组织').exec_()

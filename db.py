@@ -21,7 +21,7 @@ def insert_student(conn, name, number, sex, age, class_name="无"):
     conn.commit()
 
 
-def insert_organazation(conn, name, owner):
+def insert_organization(conn, name, owner):
     """
     插入一条组织表达记录
     """
@@ -29,6 +29,39 @@ def insert_organazation(conn, name, owner):
     sql = "INSERT INTO Organization (name, owner) VALUES (\"{name}\", \"{owner}\");".format(name=name, owner=owner)
     cursor.execute(sql)
     conn.commit()
+
+
+def insert_map(conn, stu_id, org_id):
+    """
+    插入一条学生和组织映射表的记录
+    """
+    cursor = conn.cursor()
+    sql = "INSERT INTO Stu_Org (stu_id, org_id) VALUES ({stu_id},{org_id});".format(stu_id=stu_id, org_id=org_id)
+    cursor.execute(sql)
+    conn.commit()
+
+
+def query_stus_by_org_id(conn, org_id):
+    """
+    查询map表里面指定组织的所有学生
+    """
+    cursor = conn.cursor()
+    sql = "select * from Stu_Org where org_id={};".format(org_id)
+    cur = cursor.execute(sql)
+    result = []
+    # 构建结果列表
+    for c in cur:
+        result.append(c)
+    return result
+
+
+def check_number_in_org(conn, number, org_id):
+    """
+    检查指定编号的学生是否在某个组织中
+    """
+    cursor = conn.cursor()
+    numbers = [i[1] for i in query_stus_by_org_id(conn, org_id)]
+    return number in numbers
 
 
 def query_organization_by_name(conn, name):
@@ -46,7 +79,6 @@ def query_organization_by_name(conn, name):
     return result
 
 
-
 def query_all_organization(conn):
     """
     查询所有的组织
@@ -59,6 +91,23 @@ def query_all_organization(conn):
     for c in cur:
         result.append(c)
     return result
+
+
+def query_org_id_by_org_name(conn, org_name):
+    """
+    通过组织到名字查询组织的id
+    """
+    cursor = conn.cursor()
+    sql = "select * from Organization where name=\"{org_name}\"".format(org_name=org_name)
+    cur = cursor.execute(sql)
+    result = []
+    # 构建结果列表
+    for c in cur:
+        result.append(c)
+    result = [i[0] for i in result]
+    if len(result) > 0:
+        return result[0]
+    return None
 
 
 def query_student_by_number(conn, number):
@@ -123,20 +172,3 @@ def closeDataBase(connection):
     if connection is not None:
         connection.commit()
         connection.close()
-
-# 连接数据库(如果不存在则创建)
-# conn = sqlite3.connect('test.db')
-# print("Opened database successfully")
-#
-# # 创建游标
-# cursor = conn.cursor()
-#
-# #  insert_student(cursor, "zhangjiajia", "2017081022", "男", "电子八班", 21)
-# #  result = query_student_by_number(cursor, "2017081023")
-# update_student_by_number(cursor, "2017081023", "zhangjiajia", 15)
-# # 关闭游标
-# cursor.close()
-# # 提交事物
-# conn.commit()
-# # 关闭连接
-# conn.close()

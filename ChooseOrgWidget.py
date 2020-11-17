@@ -33,6 +33,8 @@ class ChooseOrgWidget(Ui_chooseOrgWidget, QDialog):
 
     def ok(self):
         self.parent.organization = self.organizationComboBox.currentText()
+        self.parent.cur_org_id = query_org_id_by_org_name(self.conn, self.parent.organization)
+        self.close()
 
     def closeSelf(self):
         self.close()

@@ -62,3 +62,8 @@ class CameraWidget(QWidget):
         pixmap = QImage(cur_frame, width, heigt, QImage.Format_RGB888)
         pixmap = QPixmap.fromImage(pixmap)
         self.labelCamera.setPixmap(pixmap)
+
+    def close(self) -> bool:
+        super().close()
+        self._timer.stop()
+        self.camera.release()

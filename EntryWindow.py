@@ -42,6 +42,9 @@ class EntryWindow(Ui_mainWindow):
         self.database_filename = ""
         # 初始化本次选择的组织
         self.organization = ""
+        self.cur_org_id = None
+        # 是否开始识别人脸的标记位
+        self.start_detect = False
 
     def updateUI(self):
         """
@@ -69,6 +72,15 @@ class EntryWindow(Ui_mainWindow):
         else:
             self.curUserName.setText("姓名：无")
             self.curUserNumber.setText("编号：无")
+        if not self.start_detect:
+            # 将识别出的人加入已签到的列表，并更新UI的listview
+            for i in range(len(self.face_names)):
+                name = self.face_names[i]
+                number = self.face_numbers[i]
+                # 如果当前识别出的人脸不在已签到列表里面
+                if name not in self.user_list:
+                    if check_number_in_org(self.databaseConnection, number, self.cur_org_id):
+                        self.addUser(name, number)
         # 更新状态栏显示的内容
         if self.databaseConnection is None:
             self.statusbar.showMessage("数据库未连接")
@@ -140,6 +152,8 @@ class EntryWindow(Ui_mainWindow):
         # 设置摄像头图像显示前的回调函数
         self.cameraWidget.setBeforeDisplayFrame(self.beforeDisplayFrame)
         self.openCameraBtn.hide()
+        # 开启开始检测人脸的标志
+        self.start_detect = True
 
     def manuallyRecord(self):
         """
@@ -209,8 +223,13 @@ class EntryWindow(Ui_mainWindow):
         """
         关闭数据库连接
         """
+        self.cameraWidget.close()
+        self.cameraWidget = None
+        self.openCameraBtn.show()
         closeDataBase(self.databaseConnection)
         self.databaseConnection = None
+        # 关闭开始检测人脸的标志
+        self.start_detect = False
 
     def saveDatabase(self):
         """
