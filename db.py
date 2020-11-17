@@ -10,6 +10,9 @@ import sqlite3
 
 
 def insert_student(conn, name, number, sex, age, class_name="无"):
+    """
+    插入一条学生表的记录
+    """
     cursor = conn.cursor()
     sql = "INSERT INTO Student (name, age, class, number, sex) VALUES (\"{name}\", {age}, \"{class_name}\", \"{number}\", \"{sex}\");".format(
         name=name,
@@ -18,7 +21,50 @@ def insert_student(conn, name, number, sex, age, class_name="无"):
     conn.commit()
 
 
+def insert_organazation(conn, name, owner):
+    """
+    插入一条组织表达记录
+    """
+    cursor = conn.cursor()
+    sql = "INSERT INTO Organization (name, owner) VALUES (\"{name}\", \"{owner}\");".format(name=name, owner=owner)
+    cursor.execute(sql)
+    conn.commit()
+
+
+def query_organization_by_name(conn, name):
+    """
+    通过名称查询组织
+    """
+    cursor = conn.cursor()
+    sql = "select * from Organization where name=\"{name}\";".format(
+        name=name)
+    cur = cursor.execute(sql)
+    result = []
+    # 构建结果列表
+    for c in cur:
+        result.append(c)
+    return result
+
+
+
+def query_all_organization(conn):
+    """
+    查询所有的组织
+    """
+    cursor = conn.cursor()
+    sql = "select * from Organization where 1=1;"
+    cur = cursor.execute(sql)
+    result = []
+    # 构建结果列表
+    for c in cur:
+        result.append(c)
+    return result
+
+
 def query_student_by_number(conn, number):
+    """
+    通过编号查询学生
+    """
     cursor = conn.cursor()
     sql = "select * from Student where number=\"{number}\";".format(
         number=number)
@@ -31,6 +77,9 @@ def query_student_by_number(conn, number):
 
 
 def update_student_by_number(conn, number, name=None, age=None, class_name=None, sex=None):
+    """
+    通过学号更新学生的信息
+    """
     cursor = conn.cursor()
     # 查询原有的记录
     pre_record = query_student_by_number(conn, number)

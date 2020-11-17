@@ -17,6 +17,7 @@ from face_api import *
 import time
 from tools import *
 from db import *
+from AddFaceWidget import AddFaceWidget
 
 
 class EntryWindow(Ui_mainWindow):
@@ -99,6 +100,7 @@ class EntryWindow(Ui_mainWindow):
         self.openDatabaseMenu.triggered.connect(self.openDataBase)
         self.closeDatabaseMenu.triggered.connect(self.closeDatabase)
         self.saveDatabaseMenu.triggered.connect(self.saveDatabase)
+        self.insertFaceTemplateMenu.triggered.connect(self.createFace)
 
     def openCamera(self):
         # 将摄像头部件附加到主界面上
@@ -177,6 +179,15 @@ class EntryWindow(Ui_mainWindow):
         保存数据库文件
         """
         pass
+
+    def createFace(self):
+        """
+        新建人脸信息
+        """
+        if self.databaseConnection is None:
+            QMessageBox(QMessageBox.Warning, '警告', '请先连接到数据库').exec_()
+            return
+        self.addFaceWidget = AddFaceWidget(self.databaseConnection)
 
 
 if __name__ == "__main__":

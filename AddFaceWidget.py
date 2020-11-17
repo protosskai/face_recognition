@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import *
 from base.baseAddFace import Ui_AddFaceWidget
 from tools import *
 from db import *
+from sqlite3 import IntegrityError
 
 
 class AddFaceWidget(Ui_AddFaceWidget, QWidget):
@@ -23,10 +24,10 @@ class AddFaceWidget(Ui_AddFaceWidget, QWidget):
         self.initUI()
         # 保存数据库连接
         self.conn = conn
-        # 显示widget
-        self.show()
         # 初始化人脸模板路径
         self.filePath = ""
+        # 显示widget
+        self.show()
 
     def initUI(self):
         """
@@ -73,10 +74,13 @@ class AddFaceWidget(Ui_AddFaceWidget, QWidget):
         if self.filePath.strip() == "":
             QMessageBox(QMessageBox.Warning, '警告', '请选择一张图片').exec_()
             return
-        insert_student(self.conn, name, number, sex, age)
-        destFilePath = "./img_templates/" + name + "_" + number + get_file_extension_name(self.filePath)
-        copy_file(self.filePath, destFilePath)
-        QMessageBox.about(self, "成功", "添加成功")
+        try:
+            insert_student(self.conn, name, number, sex, age)
+            destFilePath = "./img_templates/" + name + "_" + number + get_file_extension_name(self.filePath)
+            copy_file(self.filePath, destFilePath)
+            QMessageBox.about(self, "成功", "添加成功")
+        except IntegrityError:
+            QMessageBox(QMessageBox.Warning, '警告', '已存在相同学号的用户').exec_()
         # 清除各个控件的内容和用到的变量
         self.clear()
 
