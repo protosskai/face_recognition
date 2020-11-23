@@ -19,6 +19,7 @@ from db import *
 from AddFaceWidget import AddFaceWidget
 from AddOrganizationWidget import AddOrganizationWidget
 from ChooseOrgWidget import ChooseOrgWidget
+from OrgEditWidget import OrgEditWidget
 
 
 class EntryWindow(Ui_mainWindow):
@@ -77,12 +78,21 @@ class EntryWindow(Ui_mainWindow):
             for i in range(len(self.face_names)):
                 name = self.face_names[i]
                 number = self.face_numbers[i]
+                if name == "Unknown":
+                    continue
                 # 如果当前识别出的人脸不在已签到列表里面
                 name_list = [i.split("\t")[0] for i in self.user_list]
                 if name not in name_list:
-                    stu_id = query_student_by_number(self.databaseConnection, number)[0][0]
+                    query_res = query_student_by_number(self.databaseConnection, number)
+                    stu_id = query_res[0][0]
                     if check_number_in_org(self.databaseConnection, stu_id, self.cur_org_id):
+                        # 在listview里面添加已签到的学生，并且在数据库中记录
                         self.addUser(name, number)
+                        # 将当前学生的签到记录插入数据库
+                        student_id = query_student_by_number(self.databaseConnection, number)[0][0]
+                        org_id = self.cur_org_id
+                        insert_t_record(self.databaseConnection, student_id, org_id)
+
         # 更新状态栏显示的内容
         if self.databaseConnection is None:
             self.statusbar.showMessage("数据库未连接")
@@ -119,6 +129,7 @@ class EntryWindow(Ui_mainWindow):
         self.saveDatabaseMenu.triggered.connect(self.saveDatabase)
         self.insertFaceTemplateMenu.triggered.connect(self.createFace)
         self.newOrganizationMenu.triggered.connect(self.createOrganization)
+        self.editOrganizationMenu.triggered.connect(self.createOrgEdit)
         self.initListView()
 
     def initListView(self):
@@ -188,7 +199,7 @@ class EntryWindow(Ui_mainWindow):
             # 计算算法耗时，并转为毫秒
             if len(self.face_locations) != 0:
                 self.timeCost = (end_time - begin_time) * 1000
-                print('人脸识别算法运行时间：%.1fms' % self.timeCost)
+                # print('人脸识别算法运行时间：%.1fms' % self.timeCost)
         self.process_this_frame = not self.process_this_frame
         # 不对图像做任何处理，直接返回
         return frame
@@ -212,7 +223,7 @@ class EntryWindow(Ui_mainWindow):
         """
         打开指定的数据库文件
         """
-        fname = QFileDialog.getOpenFileName(self.mainWindow, '打开数据库', './')
+        fname = QFileDialog.getOpenFileName(self.mainWindow, '打开数据库', './', "DataBaseFiles (*.db)")
         if fname[0] == "":
             return
         # 创建数据库连接
@@ -256,6 +267,13 @@ class EntryWindow(Ui_mainWindow):
             QMessageBox(QMessageBox.Warning, '警告', '请先连接到数据库').exec_()
             return
         self.addFaceWidget = AddOrganizationWidget(self.databaseConnection)
+
+    def createOrgEdit(self):
+        if self.databaseConnection is None:
+            QMessageBox(QMessageBox.Warning, '警告', '请先连接到数据库').exec_()
+            return
+        self.orgEditWidget = OrgEditWidget(self.databaseConnection)
+        pass
 
 
 if __name__ == "__main__":

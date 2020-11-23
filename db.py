@@ -125,6 +125,21 @@ def query_student_by_number(conn, number):
     return result
 
 
+def query_student_by_id(conn, id):
+    """
+    通过id查学生
+    """
+    cursor = conn.cursor()
+    sql = "select * from Student where id={id};".format(
+        id=id)
+    cur = cursor.execute(sql)
+    result = []
+    # 构建结果列表
+    for c in cur:
+        result.append(c)
+    return result[0]
+
+
 def update_student_by_number(conn, number, name=None, age=None, class_name=None, sex=None):
     """
     通过学号更新学生的信息
@@ -156,6 +171,17 @@ def update_student_by_number(conn, number, name=None, age=None, class_name=None,
     conn.commit()
 
 
+def insert_t_record(conn, student_id, org_id):
+    """
+    插入一条签到的时间记录
+    """
+    cursor = conn.cursor()
+    sql = "INSERT INTO t_record (student_id, org_id, current_time) VALUES ({student_id}, {org_id}, datetime('now',\'localtime'));".format(
+        student_id=student_id, org_id=org_id)
+    cursor.execute(sql)
+    conn.commit()
+
+
 def openDatabase(filename):
     """
     打开指定路径的数据库文件，并返回连接对象
@@ -172,3 +198,5 @@ def closeDataBase(connection):
     if connection is not None:
         connection.commit()
         connection.close()
+
+# conn = openDatabase("./test.db")
