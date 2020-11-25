@@ -247,7 +247,7 @@
     </property>
     <addaction name="openDatabaseMenu"/>
     <addaction name="closeDatabaseMenu"/>
-    <addaction name="exportDatabaseMenu"/>
+    <addaction name="exportExcelMenu"/>
     <addaction name="exitMenu"/>
    </widget>
    <widget class="QMenu" name="menu">
@@ -283,9 +283,9 @@
     <string>保存数据库文件</string>
    </property>
   </action>
-  <action name="exportDatabaseMenu">
+  <action name="exportExcelMenu">
    <property name="text">
-    <string>导出数据库文件</string>
+    <string>导出Excel</string>
    </property>
   </action>
   <action name="showFaceTemplateMenu">

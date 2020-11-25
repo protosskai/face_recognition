@@ -7,10 +7,9 @@
 
 import PIL.Image
 import numpy as np
-from PIL import ImageFile
-import cv2
 import shutil
 import os
+import datetime
 
 
 def load_image_file(file, size=(-1, -1), mode='RGB'):
@@ -49,3 +48,19 @@ def get_file_extension_name(path):
     :param path: 文件的路径
     """
     return os.path.splitext(path)[-1]
+
+
+def str2Date(date_str, date_format):
+    """
+    字符串类型的日期转datetime对象
+    """
+    start_time = datetime.datetime.strptime(date_str, date_format)
+    return start_time
+
+
+def date2Str(date_obj, date_format):
+    """
+    datetime对象转str
+    """
+    date_str = datetime.datetime.strftime(date_obj, date_format)
+    return date_str

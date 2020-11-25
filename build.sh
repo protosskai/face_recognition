@@ -21,6 +21,10 @@ build(){
 
 }
 
+makeDB(){
+  echo ""
+}
+
 
 # 程序的入口
 if [ $# -lt 1 ]; then

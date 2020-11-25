@@ -7,6 +7,7 @@ LastEditTime: 2020-11-13 12:49:03
 '''
 
 import sqlite3
+import datetime
 
 
 def insert_student(conn, name, number, sex, age, class_name="无"):
@@ -219,6 +220,19 @@ def insert_t_record(conn, student_id, org_id):
     conn.commit()
 
 
+def query_t_record_with_filter(conn, start_time, end_time, org_id):
+    cursor = conn.cursor()
+    sql = "select * from t_record where org_id={org_id};".format(org_id=org_id)
+    tmp = cursor.execute(sql)
+    res = []
+    for i in tmp:
+        i = list(i)
+        i[3] = datetime.datetime.strptime(i[3], "%Y-%m-%d %H:%M:%S")
+        if i[3] >= start_time and i[3] <= end_time:
+            res.append(i)
+    return res
+
+
 def openDatabase(filename):
     """
     打开指定路径的数据库文件，并返回连接对象
@@ -236,4 +250,9 @@ def closeDataBase(connection):
         connection.commit()
         connection.close()
 
+
 # conn = openDatabase("./test.db")
+# start_time = datetime.datetime.strptime("2020-11-25 16:20:00", "%Y-%m-%d %H:%M:%S").date()
+# end_time = datetime.datetime.now().date()
+# a = query_t_record_with_filter(conn, start_time, end_time, 7)
+# print(a)

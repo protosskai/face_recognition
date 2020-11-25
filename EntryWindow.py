@@ -20,6 +20,7 @@ from AddFaceWidget import AddFaceWidget
 from AddOrganizationWidget import AddOrganizationWidget
 from ChooseOrgWidget import ChooseOrgWidget
 from OrgEditWidget import OrgEditWidget
+from ExportExcelWidget import ExportExcelWidget
 
 
 class EntryWindow(Ui_mainWindow):
@@ -131,7 +132,14 @@ class EntryWindow(Ui_mainWindow):
         self.insertFaceTemplateMenu.triggered.connect(self.createFace)
         self.newOrganizationMenu.triggered.connect(self.createOrganization)
         self.editOrganizationMenu.triggered.connect(self.createOrgEdit)
+        self.exportExcelMenu.triggered.connect(self.exportExcel)
         self.initListView()
+
+    def exportExcel(self):
+        if self.databaseConnection is None:
+            QMessageBox(QMessageBox.Warning, '警告', '请先连接到数据库').exec_()
+            return
+        self.exportExcelWidget = ExportExcelWidget(self.databaseConnection)
 
     def initListView(self):
         """
@@ -257,7 +265,6 @@ class EntryWindow(Ui_mainWindow):
         self.databaseConnection = None
         # 关闭开始检测人脸的标志
         self.start_detect = False
-
 
     def createFace(self):
         """
