@@ -46,6 +46,7 @@ class EntryWindow(Ui_mainWindow):
         self.cur_org_id = None
         # 是否开始识别人脸的标记位
         self.start_detect = False
+        self.cameraWidget = None
 
     def updateUI(self):
         """
@@ -84,8 +85,9 @@ class EntryWindow(Ui_mainWindow):
                 name_list = [i.split("\t")[0] for i in self.user_list]
                 if name not in name_list:
                     query_res = query_student_by_number(self.databaseConnection, number)
-                    stu_id = query_res[0][0]
-                    if check_number_in_org(self.databaseConnection, stu_id, self.cur_org_id):
+                    # stu_id = query_res[0][0]
+                    stu_number = query_res[0][4]
+                    if check_number_in_org(self.databaseConnection, stu_number, self.cur_org_id):
                         # 在listview里面添加已签到的学生，并且在数据库中记录
                         self.addUser(name, number)
                         # 将当前学生的签到记录插入数据库
@@ -126,7 +128,6 @@ class EntryWindow(Ui_mainWindow):
         # 绑定菜单事件
         self.openDatabaseMenu.triggered.connect(self.openDataBase)
         self.closeDatabaseMenu.triggered.connect(self.closeDatabase)
-        self.saveDatabaseMenu.triggered.connect(self.saveDatabase)
         self.insertFaceTemplateMenu.triggered.connect(self.createFace)
         self.newOrganizationMenu.triggered.connect(self.createOrganization)
         self.editOrganizationMenu.triggered.connect(self.createOrgEdit)
@@ -172,15 +173,27 @@ class EntryWindow(Ui_mainWindow):
         """
         手动录入签到信息
         """
+        if self.databaseConnection is None:
+            QMessageBox(QMessageBox.Warning, '警告', '请先连接到数据库').exec_()
+            return
         name = self.nameEdit.text()
         number = self.numberEdit.text()
         if name.strip() == "":
-            QMessageBox(QMessageBox.Warning, '警告', '姓名或编号不能为空').exec_()
+            QMessageBox(QMessageBox.Warning, '警告', '姓名或编号不能为空!').exec_()
             return
         if number.strip() == "":
-            QMessageBox(QMessageBox.Warning, '警告', '姓名或编号不能为空').exec_()
+            QMessageBox(QMessageBox.Warning, '警告', '姓名或编号不能为空!').exec_()
             return
-        self.addUser(name, number)
+        if check_number_in_org(self.databaseConnection, number, self.cur_org_id):
+            if name == query_name_by_number(self.databaseConnection, number):
+                self.addUser(name, number)
+                # 录入签到表
+                student_id = query_id_by_number(self.databaseConnection, number)
+                insert_t_record(self.databaseConnection, student_id, self.cur_org_id)
+            else:
+                QMessageBox(QMessageBox.Warning, '警告', '输入的姓名与学号不符!').exec_()
+        else:
+            QMessageBox(QMessageBox.Warning, '警告', '用户不在当前的组织中!').exec_()
 
     def onGetFrameFunc(self, frame):
         """
@@ -193,7 +206,7 @@ class EntryWindow(Ui_mainWindow):
             # 记录人脸识别算法的开始时间
             begin_time = time.time()
             self.face_locations, self.face_names, self.face_numbers = detect_frame(
-                cur_frame, self.known_face_encodings, self.known_face_names, self.known_face_numbers, tolerance=0.4)
+                cur_frame, self.known_face_encodings, self.known_face_names, self.known_face_numbers, tolerance=0.35)
             # 记录人脸识别算法的结束时间
             end_time = time.time()
             # 计算算法耗时，并转为毫秒
@@ -236,19 +249,15 @@ class EntryWindow(Ui_mainWindow):
         """
         关闭数据库连接
         """
-        self.cameraWidget.close()
-        self.cameraWidget = None
+        if self.cameraWidget != None:
+            self.cameraWidget.close()
+            self.cameraWidget = None
         self.openCameraBtn.show()
         closeDataBase(self.databaseConnection)
         self.databaseConnection = None
         # 关闭开始检测人脸的标志
         self.start_detect = False
 
-    def saveDatabase(self):
-        """
-        保存数据库文件
-        """
-        pass
 
     def createFace(self):
         """

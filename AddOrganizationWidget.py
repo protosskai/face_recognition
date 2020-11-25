@@ -60,10 +60,3 @@ class AddOrganizationWidget(Ui_AddOrgnizationWidget, QWidget):
         self.ownerEdit.setText("")
 
 
-if __name__ == "__main__":
-    import sys
-
-    app = QtWidgets.QApplication(sys.argv)
-    conn = openDatabase("./test.db")
-    addOrganizationWidget = AddOrganizationWidget(conn)
-    sys.exit(app.exec_())

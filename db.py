@@ -41,6 +41,29 @@ def insert_map(conn, stu_id, org_id):
     conn.commit()
 
 
+def query_id_by_number(conn, number):
+    """
+    通过学号查询学生id
+    """
+    students = query_student_by_number(conn, number)
+    if len(students) != 0:
+        student = students[0]
+        return student[0]
+    else:
+        return None
+
+
+def query_name_by_number(conn, number):
+    """
+    通过学号查询学生姓名
+    """
+    students = query_student_by_number(conn, number)
+    if len(students) != 0:
+        student = students[0]
+        return student[1]
+    return ""
+
+
 def query_stus_by_org_id(conn, org_id):
     """
     查询map表里面指定组织的所有学生
@@ -55,12 +78,24 @@ def query_stus_by_org_id(conn, org_id):
     return result
 
 
+def query_number_by_id(conn, id):
+    """
+    通过学生的id查询编号
+    """
+    student = query_student_by_id(conn, id)
+    if student != None:
+        return student[4]
+    return None
+
+
 def check_number_in_org(conn, number, org_id):
     """
     检查指定编号的学生是否在某个组织中
     """
-    cursor = conn.cursor()
-    numbers = [i[1] for i in query_stus_by_org_id(conn, org_id)]
+    stu_ids = [i[1] for i in query_stus_by_org_id(conn, org_id)]
+    numbers = []
+    for stu_id in stu_ids:
+        numbers.append(query_number_by_id(conn, stu_id))
     return number in numbers
 
 
@@ -137,6 +172,8 @@ def query_student_by_id(conn, id):
     # 构建结果列表
     for c in cur:
         result.append(c)
+    if len(result) == 0:
+        return None
     return result[0]
 
 

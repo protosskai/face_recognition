@@ -247,7 +247,6 @@
     </property>
     <addaction name="openDatabaseMenu"/>
     <addaction name="closeDatabaseMenu"/>
-    <addaction name="saveDatabaseMenu"/>
     <addaction name="exportDatabaseMenu"/>
     <addaction name="exitMenu"/>
    </widget>
@@ -255,29 +254,18 @@
     <property name="title">
      <string>人脸管理</string>
     </property>
-    <addaction name="showFaceTemplateMenu"/>
     <addaction name="insertFaceTemplateMenu"/>
-    <addaction name="editFaceTemplateMenu"/>
-   </widget>
-   <widget class="QMenu" name="menu_2">
-    <property name="title">
-     <string>帮助</string>
-    </property>
-    <addaction name="documentMenu"/>
-    <addaction name="aboutMenu"/>
    </widget>
    <widget class="QMenu" name="menu_3">
     <property name="title">
      <string>组织管理</string>
     </property>
-    <addaction name="showOrganizationMenu"/>
     <addaction name="newOrganizationMenu"/>
     <addaction name="editOrganizationMenu"/>
    </widget>
    <addaction name="fileMenu"/>
    <addaction name="menu"/>
    <addaction name="menu_3"/>
-   <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="openDatabaseMenu">
